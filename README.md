@@ -13,16 +13,16 @@
 
 ## 🎮 Live Demo
 
-**👉 [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/) — 点开即用，无需安装。**
+**👉 [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/) — click to try, no install needed.**
 
-Demo 模式内置模拟回应，展示全部功能。填入 API Key 即可切换 Live 模式（需本地服务器）。
+Demo mode includes built-in simulated responses showing all features. Add an API key to switch to Live mode (requires local server).
 
 <details>
-<summary>🔧 Live 模式：本地运行（可选）</summary>
+<summary>🔧 Live mode: run locally (optional)</summary>
 
 ```bash
 cd PROTOTYPE/demo
-pip install openai          # 仅 Live 模式需要
+pip install openai          # only for Live mode
 python server.py            # → http://localhost:18765
 ```
 </details>
