@@ -36,6 +36,7 @@ Demo mode works without a key. Add a DeepSeek / OpenAI API key for Live mode.
 | 👥 Social | Colleague: "What do you think of Manager Zhang?" | `Trap question. He's testing your stance on leadership. The vaguer the safer. Two others listening.` |
 | 💑 Intimate | GF: "You've been working late every day" | `She's expressing loneliness, not blame. Don't justify — hold her hand first.` |
 | 🚨 Crisis | 2am, strange footsteps in hallway | `Chain-lock the door. Lights off. Peephole: check for tampering. Phone silent, 911 on speed dial.` |
+| 👥 Social | Old classmate: "You're so successful now, take care of us!" | `He's buttering you up — don't commit. 60% chance he'll ask for a loan later. Stay vague.` |
 
 ---
 
