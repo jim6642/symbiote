@@ -211,7 +211,7 @@ async function CK(){var dot=document.getElementById('sd');dot.className='sd ck';
   // 检测是否在 GitHub Pages（无本地服务器）
   try{var h=await fetch('/api/health',{signal:AbortSignal.timeout(3000)});if(!(await h.json()).ok)throw new Error();}catch(e){
     dot.className='sd ok';dot.style.color='var(--so)';dot.style.border='1px solid rgba(210,168,80,.4)';dot.style.background='rgba(210,168,80,.1)';
-    dot.textContent='🟡 线上版仅 Demo — 要连 AI 请本地运行 python server.py';return;}
+    dot.textContent='🟡 线上版仅 Demo — Live 需本地运行。下载项目后在 PROTOTYPE/demo/ 目录执行 python server.py';return;}
   try{var r=await fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:ak,provider:pv,base_url:bu})});var d=await r.json();
     if(d.ok&&d.models&&d.models.length>0){dot.className='sd ok';dot.textContent=t('conn',{p:pv,c:String(d.models.length)});
       sel.innerHTML=d.models.map(function(m){return'<option value="'+m+'">'+m+'</option>';}).join('');
@@ -242,5 +242,5 @@ document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key
 
 /* ===== INIT ===== */
 lC();lB();rC();rX();L(LANG);
-fetch('/api/health').then(function(r){return r.json();}).then(function(d){var dot=document.getElementById('sd');if(d.ok){dot.className='sd ok';dot.textContent=t('srvOk');}}).catch(function(){var dot=document.getElementById('sd');if(dot){dot.className='sd ok';dot.style.color='var(--so)';dot.style.border='1px solid rgba(210,168,80,.4)';dot.style.background='rgba(210,168,80,.1)';dot.textContent='🟡 Demo Mode (offline)';}});
+fetch('/api/health').then(function(r){return r.json();}).then(function(d){var dot=document.getElementById('sd');if(d.ok){dot.className='sd ok';dot.textContent=t('srvOk');}}).catch(function(){var dot=document.getElementById('sd');if(dot){dot.className='sd ok';dot.style.color='var(--so)';dot.style.border='1px solid rgba(210,168,80,.4)';dot.style.background='rgba(210,168,80,.1)';dot.textContent='🟡 Demo 模式（离线可用）· Live 需下载项目运行 PROTOTYPE/demo/server.py';}});
 </script></body></html>
