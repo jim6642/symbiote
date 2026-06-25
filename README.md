@@ -11,20 +11,21 @@
 
 ---
 
-## 🎮 Live Demo (Click & Try)
+## 🎮 Live Demo
 
-**Demo mode works instantly — no API key, no install.** Built-in simulated responses showcase all features.
+**👉 [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/) — 点开即用，无需安装。**
 
-> 🌐 **Deploy to GitHub Pages in 1 click:** `Settings → Pages → Source: main branch, folder: /PROTOTYPE/demo → Save`  
-> Get an instant `https://your-username.github.io/symbiote/` link to share.
+Demo 模式内置模拟回应，展示全部功能。填入 API Key 即可切换 Live 模式（需本地服务器）。
 
-**Live mode (real AI) requires local server:**
+<details>
+<summary>🔧 Live 模式：本地运行（可选）</summary>
 
 ```bash
 cd PROTOTYPE/demo
-pip install openai          # only needed for Live mode
-python server.py            # → open http://localhost:18765
+pip install openai          # 仅 Live 模式需要
+python server.py            # → http://localhost:18765
 ```
+</details>
 
 **Features:**
 - 🎭 **6 Persona Modes**: Work / Travel / Intimate / Crisis / Social / Content
@@ -128,14 +129,11 @@ symbiote/
 
 ---
 
-## 🚀 Quick Start (Demo)
+## 🚀 Quick Start
 
-```bash
-cd PROTOTYPE/demo
-python server.py                   # starts at http://localhost:18765
-```
+**No install needed — visit [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/)** and try it instantly.
 
-**Requirements:** Python 3.8+, a browser. For Live mode: `pip install openai` + API key from DeepSeek or OpenAI. Demo mode works offline with no key.
+For Live AI mode (optional): `cd PROTOTYPE/demo && python server.py`
 
 ---
 

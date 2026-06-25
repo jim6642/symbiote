@@ -11,20 +11,21 @@
 
 ---
 
-## 🎮 在线 Demo（点开即用）
+## 🎮 在线 Demo
 
-**Demo 模式无需 API Key、无需安装。** 点击链接直接试用，内置模拟回应展示全部功能。
+**👉 [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/) — 点开即用，无需安装。**
 
-> 🌐 **一键部署到 GitHub Pages：** `Settings → Pages → Source: main branch, folder: /PROTOTYPE/demo → Save`  
-> 部署后获得 `https://你的用户名.github.io/symbiote/` 链接，发给别人就能直接用。
+Demo 模式内置模拟回应，展示全部功能。填入 API Key 即可切换 Live 模式（需本地服务器）。
 
-**Live 模式（调用真 AI）需本地运行：**
+<details>
+<summary>🔧 Live 模式：本地运行（可选）</summary>
 
-```
+```bash
 cd PROTOTYPE/demo
 pip install openai          # 仅 Live 模式需要
-python server.py            # → 浏览器打开 http://localhost:18765
+python server.py            # → http://localhost:18765
 ```
+</details>
 
 **功能：**
 - 🎭 **6 种场景人格**：工作 / 旅行 / 亲密 / 危机 / 社交 / 内容消费
@@ -139,23 +140,11 @@ symbiote/
 
 ---
 
-## 🚀 快速开始（Demo）
+## 🚀 快速开始
 
-```bash
-# 1. 进入 Demo 目录
-cd PROTOTYPE/demo
+**无需安装 — 直接访问 [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/)** 即可试用。
 
-# 2. 启动本地服务器
-python server.py
-
-# 3. 浏览器打开
-# http://localhost:18765
-
-# 4. 可选：填入 DeepSeek/OpenAI API Key 启用 Live 模式
-# 不填也能用内置 Demo 模拟体验全部功能
-```
-
-**系统要求：** Python 3.8+，浏览器。Live 模式需 `pip install openai`。
+如需 Live AI 模式（可选）：`cd PROTOTYPE/demo && python server.py`
 
 ---
 
