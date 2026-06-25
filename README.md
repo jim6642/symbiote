@@ -13,11 +13,11 @@
 
 ## 🎮 Live Demo
 
-**👉 [symbiote-hazel.vercel.app](https://symbiote-hazel.vercel.app/) — 点开即用，填 Key 即连 AI。**
+**👉 [symbiote-hazel.vercel.app](https://symbiote-hazel.vercel.app/) — click to try, add API key to connect AI.**
 
-Demo 模式无需 Key 也能体验全部功能。填入 DeepSeek / OpenAI API Key 即可切换 Live 模式。
+Demo mode works without a key. Add a DeepSeek / OpenAI API key for Live mode.
 
-> 🇨🇳 国内访问慢？备用地址：[jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/)（仅 Demo 模式）
+> 🇨🇳 Slow in China? Backup: [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/) (demo only)
 
 **Features:**
 - 🎭 **6 Persona Modes**: Work / Travel / Intimate / Crisis / Social / Content
@@ -124,7 +124,7 @@ symbiote/
 ## 🚀 Quick Start
 
 Visit **[symbiote-hazel.vercel.app](https://symbiote-hazel.vercel.app/)** and try it instantly.
-(CN backup: [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/))
+(CN mirror: [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/))
 
 ---
 
