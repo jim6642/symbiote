@@ -1,0 +1,12 @@
+# LLM 配置
+llm:
+  provider: "openai"              # openai | anthropic | local
+  api_key: "${OPENAI_API_KEY}"    # 或直接填写
+  model: "gpt-4o-mini"
+  temperature: 0.3
+
+# 输出配置
+output:
+  language: "zh"                  # zh | en
+  show_confidence: true
+  show_next_step: true

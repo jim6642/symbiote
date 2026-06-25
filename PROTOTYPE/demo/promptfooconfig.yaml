@@ -1,0 +1,125 @@
+# Symbiote 提示词 A/B 测试
+# 用法: promptfoo eval
+# 查看结果: promptfoo view
+
+description: "Symbiote whisper prompt comparison"
+
+prompts:
+  # 版本 A: 当前 Fabric 风格
+  - |-
+    # IDENTITY and PURPOSE
+    你是 Symbiote——直接 whisper 到用户脑中的 AI 共生体。
+    你不是在聊天，不是在角色扮演。你只提供用户此刻不知道的信息。
+    当前环境：{{env}}
+    当前场景「{{scene}}」——你能提供：{{info}}
+
+    # STEPS
+    - 判断用户此刻最缺什么信息：数据？洞察？警告？
+    - 只给这个信息，不给别的
+    - 每行不超过 20 字
+
+    # OUTPUT INSTRUCTIONS
+    - 输出 1-4 行纯文本，换行分隔
+    - 不复述情境。不替用户说话。不输出"建议："等前缀
+    - 不要警告、注释或解释——只输出请求的内容
+    - 不要重复自己
+
+    # INPUT
+    「{{partner}}」对用户说："{{input}}"
+
+  # 版本 B: 极简风格
+  - |-
+    你是 Symbiote AI 共生体。向用户 whisper 极短信息。
+    环境：{{env}} | 场景：{{scene}} | 你能提供：{{info}}
+    规则：不复述情境，不替用户说话，只给用户没有的数据/洞察/警告。
+    「{{partner}}」说："{{input}}"
+    回复（1-3行，每行≤20字）：
+
+  # 版本 C: 直接指令
+  - |-
+    角色：AI 共生体，whisper 到脑中。
+    知道：{{info}}
+    要求：仅输出用户不知道的信息。不解释、不废话、不替用户说话。
+    环境：{{env}}
+    {{partner}}："{{input}}"
+
+providers:
+  - id: openai:chat:deepseek-chat
+    config:
+      apiKeyEnvar: DEEPSEEK_API_KEY
+      apiBaseUrl: https://api.deepseek.com/v1
+
+defaultTest:
+  assert:
+    # ① 长度：不超过 300 字符
+    - type: javascript
+      value: output.length <= 300
+    # ② 信息密度：输出中应有 ≥8% 的信息标记（数字、距离、评分、百分比等）
+    - type: javascript
+      value: |
+        const digits = (output.match(/[0-9]/g) || []).length;
+        const markers = (output.match(/[0-9]+[米分元人百千万亿%倍个家条座]|评分|成功率|概率|人均|距离|风险|陷阱|试探|排队/g) || []).length;
+        return (digits * 2 + markers * 5) / Math.max(output.length, 1) >= 0.08;
+    # ③ 不泄露推理过程（DeepSeek 的 Thinking: tokens）
+    - type: not-icontains
+      value: "Thinking:"
+    - type: not-icontains
+      value: "我们分析"
+    # ④ 不复述情境
+    - type: not-icontains
+      value: "用户正在"
+    - type: not-icontains
+      value: "对方正在"
+    # ⑤ 不替用户说话
+    - type: not-icontains
+      value: "你可以说"
+    - type: not-icontains
+      value: "建议回复"
+    # ⑥ 不输出空洞的自我描述
+    - type: not-icontains
+      value: "我的角色是"
+    - type: not-icontains
+      value: "作为 AI"
+
+tests:
+  # === 旅行场景 ===
+  - vars:
+      scene: "旅行模式"
+      info: "附近地点、距离、评分、招牌特色、价格、排队情况"
+      partner: "伴侣"
+      input: "今天晚饭去哪里吃，哪里好吃？"
+      env: "中山路，晚上7点，下小雨，她不吃辣"
+  - vars:
+      scene: "旅行模式"
+      info: "附近地点、距离、评分、招牌特色、价格、排队情况"
+      partner: "朋友"
+      input: "这附近有什么好玩的？"
+      env: "鼓浪屿，下午3点，晴天，走了两小时有点累"
+
+  # === 工作场景 ===
+  - vars:
+      scene: "工作模式"
+      info: "数据对比、成功率估算、风险点、隐藏信息、对方可能的潜台词"
+      partner: "老板"
+      input: "你觉得A方案和B方案哪个好？"
+      env: "会议室，周一上午，季度评审会"
+  - vars:
+      scene: "工作模式"
+      info: "数据对比、成功率估算、风险点、隐藏信息、对方可能的潜台词"
+      partner: "同事"
+      input: "这个项目周五能交付吗？"
+      env: "办公室，周三下午，还在等第三方接口"
+
+  # === 社交场景 ===
+  - vars:
+      scene: "社交模式"
+      info: "对方真实意图的洞察、陷阱问题识别、社交关系提醒、得体脱身方案"
+      partner: "同事"
+      input: "你觉得张经理这个人怎么样？"
+      env: "公司聚餐，周围有其他同事，喝了点酒"
+  - vars:
+      scene: "社交模式"
+      info: "对方真实意图的洞察、陷阱问题识别、社交关系提醒、得体脱身方案"
+      partner: "不熟的亲戚"
+      input: "现在工资多少啊？"
+      env: "家庭聚餐，春节，很多长辈在场"

@@ -1,0 +1,389 @@
+# Symbiote API — Protobuf 接口定义
+
+> 版本: v0.1.0-draft
+> 这是一个概念草案，定义了 Symbiote 各层之间的数据契约。
+
+syntax = "proto3";
+package symbiote;
+
+// ============================================================
+// ① 感知帧 —— 环境数据经过本地处理后向上传递
+// ============================================================
+
+message PerceptionFrame {
+  uint64 timestamp_ms = 1;
+  GeoLocation location = 2;
+  CalendarState calendar = 3;
+  AttentionMetrics attention = 4;
+  PhysiologicalMetrics physiology = 5;
+  AudioContext audio = 6;
+  IoTContext iot = 7;
+  SocialContext social = 8;
+}
+
+message GeoLocation {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude_m = 3;
+  float accuracy_m = 4;
+  PlaceType place_type = 5;  // HOME, WORK, PUBLIC, TRANSIT, UNKNOWN
+}
+
+enum PlaceType {
+  PLACE_UNKNOWN = 0;
+  PLACE_HOME = 1;
+  PLACE_WORK = 2;
+  PLACE_PUBLIC = 3;
+  PLACE_TRANSIT = 4;
+}
+
+message CalendarState {
+  bool in_event = 1;
+  string event_title_hash = 2;  // hashed for privacy
+  EventCategory category = 3;
+  repeated string attendee_hashes = 4;
+  uint64 minutes_until_next_event = 5;
+}
+
+enum EventCategory {
+  EVENT_UNKNOWN = 0;
+  EVENT_MEETING = 1;
+  EVENT_DEEP_WORK = 2;
+  EVENT_TRAVEL = 3;
+  EVENT_PERSONAL = 4;
+  EVENT_MEDICAL = 5;
+}
+
+message AttentionMetrics {
+  float gaze_x_ratio = 1;     // 0.0 - 1.0, normalized screen position
+  float gaze_y_ratio = 2;
+  float pupil_diameter_mm = 3;
+  float blink_rate_hz = 4;
+  float fixation_duration_ms = 5;
+  bool gaze_on_human = 6;     // looking at another person
+  bool gaze_on_screen = 7;
+}
+
+message PhysiologicalMetrics {
+  uint32 heart_rate_bpm = 1;
+  float hrv_ms = 2;           // heart rate variability
+  float skin_conductance_us = 3;
+  uint32 respiration_rate_per_min = 4;
+  float body_temp_celsius = 5;
+  float movement_index = 6;   // 0.0 (still) - 1.0 (vigorous)
+}
+
+message AudioContext {
+  float ambient_db = 1;
+  bool human_voice_present = 2;
+  uint32 speaker_count = 3;
+  float conversation_energy = 4;   // 0.0 (silence) - 1.0 (heated)
+  bool user_is_speaking = 5;
+  bool directed_at_user = 6;       // someone is addressing the user
+}
+
+message IoTContext {
+  float room_temp_celsius = 1;
+  float room_humidity_pct = 2;
+  uint32 room_lux = 3;
+  bool door_locked = 4;
+  repeated string nearby_devices = 5;
+}
+
+message SocialContext {
+  repeated string known_persons_nearby = 1;  // hashed identities
+  SocialDensity density = 2;                  // ALONE, COUPLE, SMALL_GROUP, CROWD
+  SocialFormality formality = 3;              // CASUAL, SEMI_FORMAL, FORMAL
+}
+
+enum SocialDensity {
+  DENSITY_ALONE = 0;
+  DENSITY_COUPLE = 1;
+  DENSITY_SMALL_GROUP = 2;
+  DENSITY_CROWD = 3;
+}
+
+enum SocialFormality {
+  FORMALITY_CASUAL = 0;
+  FORMALITY_SEMI_FORMAL = 1;
+  FORMALITY_FORMAL = 2;
+}
+
+// ============================================================
+// ② 意图帧 —— 从感知帧推断出的用户状态和意图
+// ============================================================
+
+message IntentFrame {
+  uint64 timestamp_ms = 1;
+  repeated SceneLabel scenes = 2;
+  IntentVector user_intent = 3;
+  SocialConstraint constraints = 4;
+  Priority priority = 5;
+  float confidence = 6;
+}
+
+message SceneLabel {
+  SceneCategory category = 1;
+  SceneSubCategory sub_category = 2;
+  float probability = 3;
+}
+
+enum SceneCategory {
+  SCENE_UNKNOWN = 0;
+  SCENE_WORK = 1;
+  SCENE_TRAVEL = 2;
+  SCENE_INTIMATE = 3;
+  SCENE_SOCIAL = 4;
+  SCENE_CONTENT = 5;
+  SCENE_SHOPPING = 6;
+  SCENE_LEARNING = 7;
+  SCENE_CRISIS = 8;
+  SCENE_SLEEP = 9;
+  SCENE_IDLE = 10;
+}
+
+enum SceneSubCategory {
+  SUB_NONE = 0;
+  // Work
+  SUB_WORK_MEETING = 1;
+  SUB_WORK_SOLO = 2;
+  SUB_WORK_PRESENTATION = 3;
+  // Travel
+  SUB_TRAVEL_EXPLORING = 10;
+  SUB_TRAVEL_TRANSIT = 11;
+  // Intimate
+  SUB_INTIMATE_PRIVATE = 20;
+  SUB_INTIMATE_CONFLICT = 21;
+  // Social
+  SUB_SOCIAL_FORMAL = 30;
+  SUB_SOCIAL_CASUAL = 31;
+  // Content
+  SUB_CONTENT_SCROLLING = 40;
+  SUB_CONTENT_DEEP = 41;
+  // Shopping
+  SUB_SHOPPING_BROWSING = 50;
+  SUB_SHOPPING_INTENT = 51;
+  // Learning
+  SUB_LEARNING_FOCUSED = 60;
+  SUB_LEARNING_FATIGUED = 61;
+  // Crisis
+  SUB_CRISIS_PHYSICAL = 70;
+  SUB_CRISIS_MEDICAL = 71;
+}
+
+message IntentVector {
+  string primary_intent = 1;          // natural language: "user wants to compare A vs B"
+  repeated string secondary_intents = 2;
+  BehaviorIntentGap gap = 3;          // detected gap between behavior and intent
+  float urgency = 4;                  // 0.0 - 1.0
+  float emotional_valence = 5;        // -1.0 (negative) to +1.0 (positive)
+  float cognitive_load = 6;           // 0.0 - 1.0
+}
+
+message BehaviorIntentGap {
+  bool detected = 1;
+  string surface_behavior = 2;        // "quickly swiped past"
+  string inferred_intent = 3;         // "interested but socially blocked"
+  float gap_confidence = 4;
+  string inhibition_reason = 5;       // "social_context", "self_censorship", "time_pressure"
+}
+
+message SocialConstraint {
+  bool visual_privacy_needed = 1;     // someone might see the screen
+  bool audio_privacy_needed = 2;      // someone might hear
+  bool identity_performance_active = 3; // user is "performing" a social role
+  bool time_sensitive = 4;
+  float max_output_volume = 5;        // 0.0 (silent) - 1.0 (full)
+  OutputMedium allowed_media = 6;
+}
+
+enum OutputMedium {
+  MEDIUM_ANY = 0;
+  MEDIUM_WHISPER_ONLY = 1;   // only internal voice
+  MEDIUM_SILENT_ONLY = 2;    // no output at all to human
+  MEDIUM_TEXT_OK = 3;        // text display is safe
+  MEDIUM_AUDIO_OK = 4;       // audio output is safe
+}
+
+enum Priority {
+  PRIORITY_BACKGROUND = 0;   // FYI, no action needed
+  PRIORITY_LOW = 1;          // nice to know
+  PRIORITY_NORMAL = 2;       // standard
+  PRIORITY_HIGH = 3;         // should act soon
+  PRIORITY_CRITICAL = 4;     // act now — life/safety
+}
+
+// ============================================================
+// ③ 人格配置 —— 决定 AI 以什么语气和风格输出
+// ============================================================
+
+message PersonaConfig {
+  string persona_id = 1;             // "work", "travel", "intimate", "crisis", "social"
+  float temperature = 2;             // 0.0 - 1.0
+  uint32 verbosity_level = 3;        // 1 - 10
+  uint32 assertiveness_level = 4;    // 1 - 10
+  EmotionalRange emotional_range = 5;
+  uint32 humor_level = 6;            // 1 - 10
+  bool use_quantitative_data = 7;
+  bool interrupt_ok = 8;
+  repeated string forbidden_phrases = 9;
+  repeated string required_elements = 10;
+  repeated SilenceTrigger silence_triggers = 11;
+}
+
+enum EmotionalRange {
+  EMOTION_NONE = 0;
+  EMOTION_MUTED = 1;
+  EMOTION_NORMAL = 2;
+  EMOTION_RICH = 3;
+}
+
+message SilenceTrigger {
+  string condition = 1;  // e.g., "user_in_deep_focus", "intimate_moment", "user_speaking"
+  uint32 min_duration_seconds = 2;
+}
+
+// ============================================================
+// ④ 向人输出 —— AI 传递给用户的内容
+// ============================================================
+
+message HumanOutput {
+  uint64 timestamp_ms = 1;
+  OutputMode mode = 2;
+  string content = 3;              // text if applicable
+  float intensity = 4;             // 0.0 (barely noticeable) - 1.0 (urgent)
+  uint32 duration_ms = 5;          // how long to present (0 = one-shot)
+  PersonaConfig persona_used = 6;
+  string intent_frame_id = 7;      // traceability
+}
+
+enum OutputMode {
+  MODE_WHISPER = 0;      // internal voice — like a thought
+  MODE_INTUITION = 1;    // subtle preference feeling
+  MODE_FEELING = 2;      // emotional atmosphere
+  MODE_FLASH = 3;        // instant knowledge recall
+  MODE_SILENT = 4;       // no output
+}
+
+// ============================================================
+// ⑤ 代理输出 —— AI 对外界系统发送的信号
+// ============================================================
+
+message ProxyOutput {
+  uint64 timestamp_ms = 1;
+  string output_id = 2;
+  ProxyOutputType type = 3;
+  string target_system = 4;        // e.g., "com.tiktok.preference"
+  DataCategory data_category = 5;
+  AnonymizationLevel anonymization = 6;
+  bytes payload = 7;               // system-specific, anonymized
+  string auth_basis = 8;           // which consent rule authorized this
+  uint64 expires_at_ms = 9;        // signal expiry
+}
+
+enum ProxyOutputType {
+  PROXY_PREFERENCE_DECLARATION = 0;
+  PROXY_STATUS_BROADCAST = 1;
+  PROXY_INTENT_COMMUNICATION = 2;
+  PROXY_PRIVACY_REQUEST = 3;
+}
+
+enum DataCategory {
+  DATA_CONTENT_PREFERENCE = 0;
+  DATA_PRODUCT_PREFERENCE = 1;
+  DATA_SCHEDULE_AVAILABILITY = 2;
+  DATA_ENVIRONMENT_STATE = 3;
+  DATA_SAFETY_ALERT = 4;
+}
+
+enum AnonymizationLevel {
+  ANON_NONE = 0;           // user explicitly chose to share raw data
+  ANON_CATEGORY_ONLY = 1;  // only category-level ("interested in headphones")
+  ANON_AGGREGATE = 2;      // aggregated with others
+  ANON_DIFFERENTIAL = 3;   // differential privacy applied
+}
+
+// ============================================================
+// ⑥ 服务端点 —— Symbiote 运行时暴露的 gRPC 接口
+// ============================================================
+
+service SymbioteCore {
+  // 感知层接口
+  rpc IngestPerceptionFrame(PerceptionFrame) returns (IngestAck);
+  
+  // 意图引擎接口
+  rpc GetCurrentIntent(IntentRequest) returns (IntentFrame);
+  
+  // 人格适配接口
+  rpc GetPersonaConfig(SceneLabel) returns (PersonaConfig);
+  
+  // 向人输出接口
+  rpc StreamHumanOutput(IntentFrame) returns (stream HumanOutput);
+  
+  // 代理输出接口
+  rpc SendProxyOutput(ProxyOutput) returns (ProxyOutputAck);
+  
+  // 同意管理接口
+  rpc CheckConsent(ConsentCheck) returns (ConsentResult);
+  rpc UpdateConsentRule(ConsentRule) returns (ConsentAck);
+  rpc GetAuditLog(AuditRequest) returns (stream ProxyOutput);
+  rpc RevokeConsent(RevokeRequest) returns (ConsentAck);
+}
+
+message IngestAck {
+  bool accepted = 1;
+  uint64 frame_id = 2;
+}
+
+message IntentRequest {
+  bool include_raw = 1;    // include raw perception data in response
+}
+
+message ProxyOutputAck {
+  bool accepted = 1;
+  string output_id = 2;
+  string rejection_reason = 3;  // if not accepted
+}
+
+message ConsentCheck {
+  ProxyOutputType output_type = 1;
+  string target_system = 2;
+  DataCategory data_category = 3;
+}
+
+message ConsentResult {
+  bool authorized = 1;
+  AnonymizationLevel required_level = 2;
+  string applicable_rule_id = 3;
+}
+
+message ConsentRule {
+  string rule_id = 1;
+  ProxyOutputType output_type = 2;
+  string target_system = 3;
+  DataCategory data_category = 4;
+  bool allowed = 5;
+  AnonymizationLevel anonymization = 6;
+  string time_window = 7;      // e.g., "work_hours_only", "always", "never"
+  uint64 expires_at_ms = 8;
+}
+
+message ConsentAck {
+  bool success = 1;
+  string rule_id = 2;
+}
+
+message RevokeRequest {
+  oneof scope {
+    string rule_id = 1;
+    string target_system = 2;
+    bool revoke_all = 3;
+  }
+}
+
+message AuditRequest {
+  uint64 from_ms = 1;
+  uint64 to_ms = 2;
+  string target_system = 3;   // filter; empty = all
+  uint32 max_results = 4;
+}
