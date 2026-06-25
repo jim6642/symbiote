@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Symbiote · AI Persona Demo</title>
+<style>
+:root{--bg:#0d1117;--sf:#161b22;--br:#30363d;--tx:#e6edf3;--di:#8b949e;--ac:#58a6ff;--wk:#58a6ff;--tr:#3fb950;--im:#f778ba;--cr:#f85149;--so:#d2a850;--cn:#a371f7}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.6}
+.c{max-width:960px;margin:0 auto;padding:24px 20px 60px}
+hd{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;padding:40px 0 32px;border-bottom:1px solid var(--br);margin-bottom:32px}
+h1{font-size:2rem;font-weight:700}h1 span{background:linear-gradient(135deg,var(--ac),var(--im));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+hd p{color:var(--di);margin-top:8px;font-size:.95rem}
+.ls{display:flex;gap:4px;background:var(--sf);border:1px solid var(--br);border-radius:8px;padding:3px}
+.lb{background:0 0;border:none;color:var(--di);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .15s;font-family:inherit}
+.lb:hover{color:var(--tx);background:rgba(255,255,255,.05)}.lb.on{color:var(--tx);background:var(--ac);box-shadow:0 0 8px rgba(88,166,255,.2)}
+/* 示例卡片 */
+.eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:60px}
+.ex{background:var(--sf);border:1px solid var(--br);border-radius:10px;padding:16px;transition:.2s}
+.ex:hover{border-color:var(--di)}
+.ex-h{font-weight:700;font-size:.85rem;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--br)}
+.ex-in{font-size:.78rem;color:var(--di);margin-bottom:10px;line-height:1.6}
+.ex-out{font-size:.85rem;line-height:1.8;color:var(--tx);background:rgba(88,166,255,.05);border-left:3px solid var(--ac);padding:8px 12px;border-radius:0 6px 6px 0}
+.st{font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--di);margin-bottom:12px}
+.ab{display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.ab input,.ab select{background:var(--bg);border:1px solid var(--br);border-radius:8px;color:var(--tx);padding:8px 12px;font-size:.85rem;font-family:inherit;outline:none}.ab input:focus,.ab select:focus{border-color:var(--ac)}.ab input{flex:1;min-width:200px;font-family:monospace}.ab select{cursor:pointer}
+.sd{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;padding:4px 10px;border-radius:12px;white-space:nowrap}
+.sd::before{content:'';width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ok{background:rgba(63,185,80,.1);color:var(--tr)}.ok::before{background:var(--tr);box-shadow:0 0 6px var(--tr)}
+.er{background:rgba(248,81,73,.1);color:var(--cr)}.er::before{background:var(--cr)}
+.ck{background:rgba(88,166,255,.1);color:var(--ac)}.ck::before{background:var(--ac);animation:pulse .8s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+@media(max-width:640px){.sg{grid-template-columns:repeat(2,1fr)}}
+.sc{background:var(--sf);border:2px solid var(--br);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:center}
+.sc:hover{border-color:var(--di);transform:translateY(-1px)}.sc.on{border-color:var(--ac);box-shadow:0 0 20px rgba(88,166,255,.15)}
+.sc .ic{font-size:1.8rem;margin-bottom:6px}.sc .la{font-size:.9rem;font-weight:600;color:var(--tx)}.sc .su{font-size:.7rem;color:var(--di);margin-top:2px}
+.ia{background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:24px;margin-bottom:28px}
+.ir{display:flex;gap:12px;margin-bottom:12px}@media(max-width:640px){.ir{flex-direction:column}}
+.ir label{font-size:.8rem;color:var(--di);display:block;margin-bottom:4px}
+.ir input,.ir textarea{width:100%;background:var(--bg);border:1px solid var(--br);border-radius:8px;color:var(--tx);padding:10px 14px;font-size:.9rem;font-family:inherit;outline:none}.ir input:focus,.ir textarea:focus{border-color:var(--ac)}.ir textarea{resize:vertical;min-height:80px}
+.br{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+.btn{padding:8px 18px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+.bp{background:var(--ac);color:#fff}.bp:hover{filter:brightness(1.15)}
+.bo{background:0 0;border:1px solid var(--br);color:var(--tx)}.bo:hover{border-color:var(--di)}
+.bc{background:rgba(63,185,80,.08);border:1px solid var(--tr);color:var(--tr)}.bc:hover{background:rgba(63,185,80,.15)}
+.bs{padding:6px 14px;font-size:.78rem}
+.pb{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;margin-bottom:12px}
+.rc{background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:24px;margin-bottom:12px}
+.rc .th{font-size:.8rem;color:var(--di);margin-bottom:10px}.rc .bd{font-size:1rem;line-height:1.8;white-space:pre-wrap}
+.bw{background:rgba(88,166,255,.08);color:var(--wk);border:1px solid rgba(88,166,255,.3)}
+.bt{background:rgba(63,185,80,.08);color:var(--tr);border:1px solid rgba(63,185,80,.3)}
+.bi{background:rgba(247,120,186,.08);color:var(--im);border:1px solid rgba(247,120,186,.3)}
+.bx{background:rgba(248,81,73,.08);color:var(--cr);border:1px solid rgba(248,81,73,.3)}
+.bs{background:rgba(210,168,80,.08);color:var(--so);border:1px solid rgba(210,168,80,.3)}
+.bn{background:rgba(163,113,247,.08);color:var(--cn);border:1px solid rgba(163,113,247,.3)}
+.oa{margin-bottom:28px}
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:768px){.cg{grid-template-columns:repeat(2,1fr)}}@media(max-width:480px){.cg{grid-template-columns:1fr}}
+.cc{background:var(--sf);border:1px solid var(--br);border-radius:10px;padding:16px;font-size:.85rem}
+.cc .cl{font-weight:700;font-size:.85rem;margin-bottom:8px}.cc .cb{line-height:1.7;color:var(--tx)}
+.es{text-align:center;padding:60px 20px;color:var(--di)}.es .bi{font-size:3rem;margin-bottom:12px;opacity:.5}
+.ld{text-align:center;padding:40px;color:var(--di)}
+.sp{display:inline-block;width:24px;height:24px;border:3px solid var(--br);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+pre.lg{background:var(--bg);border:1px solid var(--br);border-radius:8px;padding:12px;font-size:.75rem;color:var(--di);margin-top:6px;white-space:pre-wrap;max-height:120px;overflow-y:auto}
+.cx{background:var(--sf);border:1px solid var(--br);border-radius:10px;padding:12px 16px;cursor:pointer;transition:all .2s;min-width:120px}
+.cx:hover{border-color:var(--ac)}.cx.on{border-color:var(--ac);box-shadow:0 0 12px rgba(88,166,255,.12)}
+.cx .cn{font-weight:700;font-size:.9rem;margin-bottom:4px}.cx .cm{font-size:.7rem;color:var(--di)}
+.tt{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:14px;font-size:.78rem;cursor:pointer;transition:all .15s}.tt:hover{filter:brightness(1.2)}
+.tg{border:1px solid rgba(63,185,80,.4);background:rgba(63,185,80,.1);color:var(--tr)}
+.ty{border:1px solid rgba(210,168,80,.4);background:rgba(210,168,80,.1);color:var(--so)}
+.tr{border:1px solid rgba(248,81,73,.4);background:rgba(248,81,73,.1);color:var(--cr)}
+.fi{width:100%;background:var(--bg);border:1px solid var(--br);border-radius:8px;color:var(--tx);padding:8px 12px;font-size:.85rem;font-family:inherit;outline:none}.fi:focus{border-color:var(--ac)}
+</style></head><body><div class="c">
+
+<hd><div style="flex:1;min-width:200px"><h1><span>Symbiote</span> · <span data-i18n="sub">人格适配演示</span></h1><p data-i18n="tag">同一个情境，不同环境 — AI 自动切换语气、风格和回应方式</p></div>
+<div class="ls"><button class="lb on" data-lang="zh" onclick="L('zh')">中文</button><button class="lb" data-lang="en" onclick="L('en')">EN</button></div></hd>
+
+<div class="ab"><select id="pr"><option value="deepseek">DeepSeek</option><option value="openai">OpenAI</option><option value="custom">Custom</option></select>
+<input id="ak" type="password" placeholder="sk-... API Key" data-i18n-placeholder="aph">
+<select id="ms" style="max-width:220px"><option value="" data-i18n="mph">检测后再选模型</option></select>
+<input id="bu" type="text" placeholder="Custom Base URL" style="max-width:220px;display:none">
+<button class="btn bo bs" onclick="CK()" data-i18n="db">🔌 检测连接</button>
+<span id="sd" class="sd ck" data-i18n="dw">等待检测</span></div>
+
+<div class="st"><span data-i18n="s1">① 选择当前环境</span></div>
+<div class="sg" id="sG"><div class="sc on" data-scene="work"><div class="ic">🏢</div><div class="la" data-i18n="wL">工作决策</div><div class="su" data-i18n="wS">理性·数据驱动</div></div>
+<div class="sc" data-scene="travel"><div class="ic">✈️</div><div class="la" data-i18n="tL">旅行探索</div><div class="su" data-i18n="tS">热情·叙事感</div></div>
+<div class="sc" data-scene="intimate"><div class="ic">💑</div><div class="la" data-i18n="iL">亲密空间</div><div class="su" data-i18n="iS">温柔·克制</div></div>
+<div class="sc" data-scene="crisis"><div class="ic">🚨</div><div class="la" data-i18n="cL">紧急事件</div><div class="su" data-i18n="cS">冷静·果断</div></div>
+<div class="sc" data-scene="social"><div class="ic">👥</div><div class="la" data-i18n="sL">社交场合</div><div class="su" data-i18n="sS">得体·辅助</div></div>
+<div class="sc" data-scene="content"><div class="ic">📱</div><div class="la" data-i18n="nL">内容消费</div><div class="su" data-i18n="nS">轻量·不打扰</div></div></div>
+
+<div class="st" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="TM()"><span data-i18n="mem">👤 人物记忆</span><span id="mT" style="font-size:1.2rem">▸</span></div>
+<div id="mP" style="display:none;margin-bottom:28px"><div id="cL" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px"></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><input id="nN" data-i18n-placeholder="cnp" placeholder="人名" style="flex:1;min-width:100px" class="fi">
+<input id="nA" data-i18n-placeholder="cap" placeholder="昵称" style="flex:1;min-width:100px" class="fi">
+<button class="btn bo bs" onclick="aC()" data-i18n="ac">+ 添加人物</button></div>
+<div id="tE" style="display:none;margin-top:12px;background:var(--sf);border:1px solid var(--br);border-radius:8px;padding:16px">
+<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center"><strong id="tT"></strong><button class="btn bo bs" onclick="cE()" style="margin-left:auto">✕</button></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="nT" data-i18n-placeholder="ttp" placeholder="特征" style="flex:1;min-width:150px" class="fi">
+<select id="nL" style="background:var(--bg);border:1px solid var(--br);border-radius:8px;color:var(--tx);padding:8px 12px;font-size:.85rem;font-family:inherit;outline:none;cursor:pointer"><option value="green" data-i18n="gl">🟢 始终注入</option><option value="yellow" data-i18n="yl">🟡 关联时注入</option><option value="red" data-i18n="rl">🔴 仅存储</option></select>
+<button class="btn bo bs" onclick="aT()" data-i18n="at">+ 添加特征</button></div>
+<div id="cT" style="display:flex;flex-wrap:wrap;gap:6px"></div></div></div>
+
+<div class="st" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="TU()"><span data-i18n="ubg">🧑 我的背景</span><span id="uT" style="font-size:1.2rem">▸</span></div>
+<div id="uP" style="display:none;margin-bottom:28px;background:var(--sf);border:1px solid var(--br);border-radius:12px;padding:16px">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px"><div><label data-i18n="al" style="font-size:.8rem;color:var(--di)">年龄</label><input id="uA" data-i18n-placeholder="ap" placeholder="如：25" class="fi"></div>
+<div><label data-i18n="jl" style="font-size:.8rem;color:var(--di)">职业</label><input id="uJ" data-i18n-placeholder="jp" placeholder="如：程序员 / 大学生" class="fi"></div>
+<div><label data-i18n="genl" style="font-size:.8rem;color:var(--di)">性别</label><input id="uGe" data-i18n-placeholder="genp" placeholder="如：男 / 女" class="fi"></div>
+<div><label data-i18n="cl" style="font-size:.8rem;color:var(--di)">所在城市</label><input id="uC" data-i18n-placeholder="cp" placeholder="如：厦门" class="fi"></div>
+<div><label data-i18n="rel" style="font-size:.8rem;color:var(--di)">感情状态</label><input id="uR" data-i18n-placeholder="rp" placeholder="如：恋爱中 / 单身" class="fi"></div></div>
+<div style="margin-top:12px"><label data-i18n="trl" style="font-size:.8rem;color:var(--di)">个人特征（逗号分隔）</label><input id="uTr" data-i18n-placeholder="trp" placeholder="如：社恐、预算敏感、喜欢科技、不吃香菜" class="fi"></div>
+<div style="margin-top:8px"><label data-i18n="gol" style="font-size:.8rem;color:var(--di)">当前目标/状态</label><input id="uG" data-i18n-placeholder="gop" placeholder="如：攒钱买房 / 考研" class="fi"></div>
+<div style="text-align:right;margin-top:10px"><button class="btn bo bs" onclick="cB()" data-i18n="cbg">清空</button><button class="btn bp bs" onclick="sB()" data-i18n="sbg">保存背景</button></div></div>
+
+<div class="st"><span data-i18n="s2">② 描述当前情境</span></div>
+<div class="ia"><div class="ir"><div style="flex:1"><label data-i18n="pl">说话对象</label><input id="pn" data-i18n-placeholder="pp" placeholder="如：老板 / 伴侣 / 同事 / 陌生人…"></div></div>
+<div class="ir"><div style="flex:1"><label data-i18n="il">对方说了什么（或发生了什么）</label><textarea id="inp" data-i18n-placeholder="ip" placeholder="如：老板问'选A方案还是B方案？'
+或：伴侣沉默了说'我们需要谈谈'…"></textarea></div></div>
+<div class="ir"><div style="flex:1"><label data-i18n="el">环境描述</label><input id="env" data-i18n-placeholder="ep" placeholder="如：中山路，晚上7点，下小雨"></div></div>
+<div class="br"><button class="btn bo" onclick="CA()" data-i18n="clr">清空</button><button class="btn bc" onclick="CP()" data-i18n="cmp">🔍 对比全部场景</button><button class="btn bp" onclick="AN()" data-i18n="gen">⚡ 生成 AI 回应</button></div></div>
+
+<div class="st"><span data-i18n="s3">③ AI 回应</span></div><div class="oa" id="oA"><div class="es"><div class="bi">🧠</div><p data-i18n="es">选择场景，输入情境，看看 Symbiote 在不同环境下怎么回应</p></div></div>
+
+<div class="st" style="margin-top:36px"><span data-i18n="extitle">📋 效果示例</span></div>
+<div class="eg" id="examples"></div>
+
+<div style="text-align:center;padding:40px 0 20px;color:var(--di);font-size:.85rem;border-top:1px solid var(--br);margin-top:20px">
+  <span data-i18n="contact">📧 联系作者：</span><a href="mailto:3352875852@qq.com" style="color:var(--ac);text-decoration:none">3352875852@qq.com</a>
+</div>
+
+</div><script>
+/* ===== DECLARATIONS ===== */
+var D_EN=[{id:'gf',name:'Girlfriend',aliases:['her','gf','babe'],traits:[{text:'No spicy food',level:'green'},{text:'Prefers quiet',level:'green'},{text:'Hates being lectured',level:'yellow'}]},{id:'boss',name:'Boss',aliases:['manager','CEO'],traits:[{text:'Impatient, hates rambling',level:'green'},{text:'Data-driven, not intuitive',level:'green'},{text:'Dislikes public disagreement',level:'yellow'}]},{id:'mom',name:'Mom',aliases:['mother'],traits:[{text:'Worries easily',level:'green'},{text:'Asks about salary/relationships',level:'yellow'}]}];
+var D_ZH=[{id:'gf',name:'女朋友',aliases:['她','女友','宝贝','媳妇','伴侣'],traits:[{text:'不吃辣',level:'green'},{text:'喜欢安静的地方',level:'green'},{text:'讨厌被说教',level:'yellow'}]},{id:'boss',name:'老板',aliases:['领导','张总'],traits:[{text:'急性子，讨厌啰嗦',level:'green'},{text:'看重数据胜过直觉',level:'green'},{text:'不喜欢公开被反驳',level:'yellow'}]},{id:'mom',name:'妈妈',aliases:['老妈'],traits:[{text:'容易担心',level:'green'},{text:'喜欢问工资和婚恋',level:'yellow'}]}];
+
+var I={zh:{sub:'人格适配演示',tag:'同一个情境，不同环境 — AI 自动切换语气和风格',aph:'sk-... API Key',db:'🔌 检测连接',dw:'等待检测',nok:'未填 Key（Demo 模式）',srvD:'❌ 服务器未运行',conn:'✅ {p} 已连接 — {c} 个模型',cerr:'❌ {m}',chk:'检测中…',srvOk:'✅ 服务器运行中',s1:'① 选择当前环境',wL:'工作决策',wS:'理性·数据驱动',tL:'旅行探索',tS:'热情·叙事感',iL:'亲密空间',iS:'温柔·克制',cL:'紧急事件',cS:'冷静·果断',sL:'社交场合',sS:'得体·辅助',nL:'内容消费',nS:'轻量·不打扰',s2:'② 描述当前情境',pl:'说话对象',pp:'如：老板 / 伴侣 / 同事 / 陌生人…',il:'对方说了什么（或发生了什么）',ip:"如：老板问'选A还是B？'\n或：伴侣说'我们需要谈谈'…",el:'环境描述',ep:'如：中山路逛街，晚上7点，下小雨',clr:'清空',cmp:'🔍 对比全部场景',gen:'⚡ 生成 AI 回应',s3:'③ AI 回应',mem:'👤 人物记忆',ubg:'🧑 我的背景',es:'选择场景，输入情境，看 Symbiote 如何适配回应',cleared:'已清空',loading:'Symbiote 感知场景、适配人格…',demo:'🟡 Demo 模拟',live:'🟢 Live',prov:'提供: ',cnp:'人名',cap:'昵称',ac:'+ 添加人物',ttp:'特征',at:'+ 添加特征',gl:'🟢 始终注入',yl:'🟡 关联时注入',rl:'🔴 仅存储',al:'年龄',ap:'如：25',jl:'职业',jp:'如：程序员 / 大学生',cl:'所在城市',cp:'如：厦门',genl:'性别',genp:'如：男',rel:'感情状态',rp:'如：恋爱中',trl:'个人特征（逗号分隔）',trp:'如：社恐、预算敏感、喜欢科技',gol:'当前目标/状态',gop:'如：攒钱买房 / 考研 / 转行',sbg:'保存背景',cbg:'清空',saved:'已保存',mph:'检测后再选',noC:'还没有人物，点下方添加',delC:'删除这个人物？',ni:'请先输入情境描述',cmpL:'生成 6 种人格对比…',fbD:'已切换 Demo 模式',why:'🔍 为什么 AI 这样回应？',rZH:'- Reply in Chinese.',contact:'📧 联系作者：',extitle:'📋 效果示例'},en:{sub:'Persona Demo',tag:'Same situation, different context — AI adapts tone and style',aph:'sk-... API Key',db:'🔌 Test Connection',dw:'Waiting…',nok:'No key (Demo mode)',srvD:'❌ Server not running',conn:'✅ {p} connected — {c} models',cerr:'❌ {m}',chk:'Checking…',srvOk:'✅ Server running',s1:'① Select Context',wL:'Work',wS:'Analytical',tL:'Travel',tS:'Enthusiastic',iL:'Intimate',iS:'Gentle',cL:'Crisis',cS:'Swift',sL:'Social',sS:'Tactful',nL:'Content',nS:'Lightweight',s2:'② Describe Situation',pl:'Speaking to',pp:'e.g. boss / partner / colleague…',il:'What they said (or what happened)',ip:"e.g. Boss: 'Option A or B?'\nor: Partner: 'We need to talk'…",el:'Environment',ep:'e.g. Zhongshan Road, 7pm, light rain',clr:'Clear',cmp:'🔍 Compare All',gen:'⚡ Generate',s3:'③ AI Response',mem:'👤 People',ubg:'🧑 My Profile',es:'Select a context, describe the situation, see Symbiote adapt',cleared:'Cleared',loading:'Sensing context, adapting persona…',demo:'🟡 Demo',live:'🟢 Live',prov:'Provides: ',cnp:'Name',cap:'Nicknames',ac:'+ Add Person',ttp:'Trait',at:'+ Add Trait',gl:'🟢 Always',yl:'🟡 Contextual',rl:'🔴 Stored',al:'Age',ap:'e.g. 25',jl:'Occupation',jp:'e.g. Engineer / Student',cl:'City',cp:'e.g. New York',genl:'Gender',genp:'e.g. Male',rel:'Relationship',rp:'e.g. In a relationship',trl:'Personal traits (comma separated)',trp:'e.g. introvert, loves tech, hates cilantro',gol:'Current goal',gop:'e.g. saving / studying',sbg:'Save',cbg:'Clear',saved:'Saved',mph:'Test connection first',noC:'No characters yet.',delC:'Delete this person?',ni:'Please describe the situation first',cmpL:'Comparing 6 personas…',fbD:'Fell back to Demo',why:'🔍 Why did the AI respond this way?',rZH:'- Respond in English.',contact:'📧 Contact: ',extitle:'📋 Examples'}};
+
+var LANG=localStorage.getItem('symbiote_lang')||'zh';
+var chars=[],eid=null,cur='work';
+var badgeMap={work:'bw',travel:'bt',intimate:'bi',crisis:'bx',social:'bs',content:'bn'};
+function gD(){return LANG==='en'?D_EN:D_ZH;}
+
+var SZ={work:{id:'work',name:'工作模式',icon:'🏢',info:'数据对比、成功率估算、风险点、隐藏信息、对方潜台词'},travel:{id:'travel',name:'旅行模式',icon:'✈️',info:'附近地点、距离、评分、招牌特色、价格、排队'},intimate:{id:'intimate',name:'亲密模式',icon:'💑',info:'对方情绪解读、关系动态提醒、何时沉默比说话好'},crisis:{id:'crisis',name:'危机模式',icon:'🚨',info:'风险评估、逃生路线、紧急联系方式、急救步骤'},social:{id:'social',name:'社交模式',icon:'👥',info:'意图洞察、陷阱识别、社交关系提醒、得体脱身'},content:{id:'content',name:'内容消费模式',icon:'📱',info:'内容质量、信息茧房提醒、对立观点提示、好内容标记'}};
+var SE={work:{id:'work',name:'Work Mode',icon:'🏢',info:'Data comparisons, success-rate estimates, risk factors, hidden subtext'},travel:{id:'travel',name:'Travel Mode',icon:'✈️',info:'Nearby places, ratings, signature dishes, prices, wait times'},intimate:{id:'intimate',name:'Intimate Mode',icon:'💑',info:'Emotional reads, relationship alerts, when silence beats speaking'},crisis:{id:'crisis',name:'Crisis Mode',icon:'🚨',info:'Risk assessment, escape routes, emergency contacts, first-aid steps'},social:{id:'social',name:'Social Mode',icon:'👥',info:'Intention insights, trap detection, social reminders, exit plans'},content:{id:'content',name:'Content Mode',icon:'📱',info:'Quality calibration, echo-chamber warnings, opposing-viewpoint flags'}};
+function gS(){return LANG==='en'?SE:SZ;}
+
+/* ===== UTILS ===== */
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function t(k,v){var s=(I[LANG]&&I[LANG][k])||k;if(v)Object.keys(v).forEach(function(kk){s=s.replace('{'+kk+'}',v[kk]);});return s;}
+
+/* ===== LANGUAGE ===== */
+function L(lg){LANG=lg;localStorage.setItem('symbiote_lang',lg);
+  document.querySelectorAll('.lb').forEach(function(b){b.classList.toggle('on',b.dataset.lang===lg);});
+  document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.dataset.i18n;if(I[lg]&&I[lg][k])el.textContent=I[lg][k];});
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){var k=el.dataset.i18nPlaceholder;if(I[lg]&&I[lg][k])el.placeholder=I[lg][k];});
+  ['work','travel','intimate','crisis','social','content'].forEach(function(s){var c=document.querySelector('[data-scene="'+s+'"]');if(!c)return;var l=c.querySelector('.la');var b=c.querySelector('.su');if(l)l.textContent=I[lg][s+'L']||l.textContent;if(b)b.textContent=I[lg][s+'S']||b.textContent;});
+  var lv=document.getElementById('nL');if(lv){var o=lv.options;if(o[0])o[0].textContent=I[lg]['gl']||o[0].textContent;if(o[1])o[1].textContent=I[lg]['yl']||o[1].textContent;if(o[2])o[2].textContent=I[lg]['rl']||o[2].textContent;}
+  var ms=document.getElementById('ms');if(ms&&ms.options[0]&&ms.options[0].value==='')ms.options[0].textContent=I[lg]['mph']||ms.options[0].textContent;
+  var dI=gD().map(function(c){return c.id;}).sort().join(',');var cI=chars.map(function(c){return c.id;}).sort().join(',');
+  if(cI===dI){chars=JSON.parse(JSON.stringify(gD()));sC();rC();}
+  rX();}
+
+var EX_ZH=[{h:'🏢 工作 · 老板问策略',i:'"先做功能A还是先清技术债？"<br>周一早会，两派意见',o:'技术债拖越久利息越高。<br>功能A延期三个月代价更低。'},{h:'✈️ 旅行 · 女友问晚饭',i:'"今晚吃什么"<br>中山路，晚7点，下雨',o:'向右300米 海味馆 评分4.3<br>杂鱼酱油水 人均55元 不辣<br>安静室内避雨 骑车3分钟到'},{h:'👥 社交 · 同事挖坑',i:'"你觉得张经理这人怎么样？"<br>公司聚餐，喝了酒',o:'陷阱问题。<br>他在试探你对上级的态度。<br>回答越模糊越安全。<br>周围至少有两人在听。'},{h:'💑 亲密 · 伴侣委屈',i:'"你最近总是加班"<br>周五晚9点，刚到家',o:'她在表达孤独，不是指责。<br>计划一顿安静的海鲜晚餐。<br>今晚别辩解，先握住她的手。'},{h:'🚨 危机 · 深夜安全',i:'独居，凌晨2点<br>楼道有奇怪脚步声',o:'锁链挂好门，别开灯。<br>猫眼确认是否有人撬锁。<br>手机静音，拨110备选。'}];
+var EX_EN=[{h:'🏢 Work · Boss asks strategy',i:'"Feature A or pay tech debt first?"<br>Monday meeting, split opinions',o:'Tech debt compounds fast.<br>Feature A can wait 3 months<br>at much lower cost.'},{h:'✈️ Travel · Girlfriend dinner',i:'"What\'s for dinner tonight?"<br>Zhongshan Rd, 7pm, rain',o:'300m right: Hai Wei Guan 4.3★<br>Braised fish in soy sauce ¥55/p<br>No spicy, quiet, bike 3 min'},{h:'👥 Social · Colleague trap',i:'"What do you think of Manager Zhang?"<br>Office party, a few drinks in',o:'Trap question.<br>He\'s testing your stance on leadership.<br>The vaguer the safer.<br>At least 2 people listening.'},{h:'💑 Intimate · Partner upset',i:'"You\'ve been working late every day"<br>Fri 9pm, just got home',o:'She\'s expressing loneliness, not blame.<br>Plan a quiet seafood dinner.<br>Don\'t justify — hold her hand first.'},{h:'🚨 Crisis · Night safety',i:'Home alone, 2am<br>Strange footsteps in hallway',o:'Chain-lock the door. Lights off.<br>Peephole: check for tampering.<br>Phone on silent, 110 on speed dial.'}];
+function rX(){var ex=LANG==='en'?EX_EN:EX_ZH;var el=document.getElementById('examples');if(!el)return;el.innerHTML=ex.map(function(e){return '<div class="ex"><div class="ex-h">'+e.h+'</div><div class="ex-in">'+e.i+'</div><div class="ex-out">'+e.o+'</div></div>';}).join('');}
+
+/* ===== CHARACTER MEMORY ===== */
+function lC(){try{var d=localStorage.getItem('symbiote_chars');if(d){chars=JSON.parse(d);return;}}catch(e){}chars=JSON.parse(JSON.stringify(gD()));}
+function sC(){localStorage.setItem('symbiote_chars',JSON.stringify(chars));}
+function TM(){var p=document.getElementById('mP');var t=document.getElementById('mT');if(p.style.display==='none'){p.style.display='block';t.textContent='▾';}else{p.style.display='none';t.textContent='▸';}}
+function rC(){var el=document.getElementById('cL');if(chars.length===0){el.innerHTML='<div style="color:var(--di);font-size:.8rem">'+t('noC')+'</div>';return;}
+  el.innerHTML=chars.map(function(c){var g=c.traits.filter(function(t){return t.level==='green';}).length;var y=c.traits.filter(function(t){return t.level==='yellow';}).length;var r=c.traits.filter(function(t){return t.level==='red';}).length;
+    return'<div class="cx" onclick="oE(\''+c.id+'\')"><div class="cn">'+esc(c.name)+'</div><div class="cm">'+c.traits.length+' traits · 🟢'+g+' 🟡'+y+' 🔴'+r+'</div><div style="margin-top:2px;font-size:.65rem;color:var(--di)">'+esc(c.aliases.join(' / '))+'</div><div style="margin-top:2px"><button class="btn bo bs" style="font-size:.65rem;padding:2px 8px" onclick="event.stopPropagation();dC(\''+c.id+'\')">✕</button></div></div>';}).join('');}
+function oE(cid){eid=cid;var c=chars.find(function(x){return x.id===cid;});if(!c)return;document.getElementById('tT').textContent='✎ '+c.name;document.getElementById('tE').style.display='block';document.getElementById('nT').value='';document.getElementById('nL').value='green';rCT();document.querySelectorAll('.cx').forEach(function(el){el.classList.remove('on');});document.querySelectorAll('.cx').forEach(function(el){if(el.querySelector('.cn')&&el.querySelector('.cn').textContent===c.name)el.classList.add('on');});}
+function cE(){document.getElementById('tE').style.display='none';eid=null;}
+function rCT(){var c=chars.find(function(x){return x.id===eid;});if(!c)return;var el=document.getElementById('cT');el.innerHTML=c.traits.map(function(t,i){var cls=t.level==='green'?'tg':t.level==='yellow'?'ty':'tr';var em=t.level==='green'?'🟢':t.level==='yellow'?'🟡':'🔴';return'<span class="tt '+cls+'" onclick="cTL('+i+')" title="Click to cycle">'+em+' '+esc(t.text)+' <span style="cursor:pointer;margin-left:2px" onclick="event.stopPropagation();dT('+i+')">✕</span></span>';}).join('');}
+function aC(){var n=document.getElementById('nN').value.trim();var a=document.getElementById('nA').value.trim();if(!n)return;var id='c'+Date.now();var als=a?a.split(/[,，]/).map(function(s){return s.trim();}).filter(Boolean):[];chars.push({id:id,name:n,aliases:als,traits:[]});sC();rC();document.getElementById('nN').value='';document.getElementById('nA').value='';oE(id);}
+function dC(cid){if(!confirm(t('delC')))return;chars=chars.filter(function(c){return c.id!==cid;});sC();rC();cE();}
+function aT(){if(!eid)return;var tx=document.getElementById('nT').value.trim();if(!tx)return;var lv=document.getElementById('nL').value;var c=chars.find(function(x){return x.id===eid;});if(!c)return;c.traits.push({text:tx,level:lv});sC();rC();rCT();document.getElementById('nT').value='';}
+function dT(idx){if(!eid)return;var c=chars.find(function(x){return x.id===eid;});if(!c)return;c.traits.splice(idx,1);sC();rC();rCT();}
+function cTL(idx){if(!eid)return;var c=chars.find(function(x){return x.id===eid;});if(!c)return;var o=['green','yellow','red'];var cur=o.indexOf(c.traits[idx].level);c.traits[idx].level=o[(cur+1)%3];sC();rC();rCT();}
+function mC(pn){if(!pn)return null;var p=pn.toLowerCase();for(var i=0;i<chars.length;i++){var c=chars[i];if(c.name.toLowerCase().indexOf(p)!==-1||p.indexOf(c.name.toLowerCase())!==-1)return c;for(var j=0;j<c.aliases.length;j++){var a=c.aliases[j].toLowerCase();if(a.indexOf(p)!==-1||p.indexOf(a)!==-1)return c;}}return null;}
+function gCT(pn){var c=mC(pn);if(!c)return'';var g=c.traits.filter(function(t){return t.level==='green';}).map(function(t){return t.text;});if(g.length===0)return'';return'\nAbout「'+c.name+'」you know: '+g.join(', ')+'.';}
+
+/* ===== USER BACKGROUND ===== */
+function TU(){var p=document.getElementById('uP');var t=document.getElementById('uT');if(p.style.display==='none'){p.style.display='block';t.textContent='▾';}else{p.style.display='none';t.textContent='▸';}}
+function sB(){var bg={age:document.getElementById('uA').value.trim(),job:document.getElementById('uJ').value.trim(),gender:document.getElementById('uGe').value.trim(),city:document.getElementById('uC').value.trim(),relation:document.getElementById('uR').value.trim(),traits:document.getElementById('uTr').value.trim(),goal:document.getElementById('uG').value.trim()};localStorage.setItem('symbiote_userbg',JSON.stringify(bg));alert(t('saved'));}
+function cB(){['uA','uJ','uGe','uC','uR','uTr','uG'].forEach(function(id){document.getElementById(id).value='';});localStorage.removeItem('symbiote_userbg');}
+function lB(){try{var bg=JSON.parse(localStorage.getItem('symbiote_userbg'));if(!bg)return;if(bg.age)document.getElementById('uA').value=bg.age;if(bg.job)document.getElementById('uJ').value=bg.job;if(bg.gender)document.getElementById('uGe').value=bg.gender;if(bg.city)document.getElementById('uC').value=bg.city;if(bg.relation)document.getElementById('uR').value=bg.relation;if(bg.traits)document.getElementById('uTr').value=bg.traits;if(bg.goal)document.getElementById('uG').value=bg.goal;}catch(e){}}
+function gUC(){try{var bg=JSON.parse(localStorage.getItem('symbiote_userbg'));if(!bg)return'';var p=[];if(bg.gender)p.push(bg.gender);if(bg.age)p.push(bg.age+(LANG==='en'?'yo':'岁'));if(bg.job)p.push(bg.job);if(bg.city)p.push((LANG==='en'?'in ':'在')+bg.city);if(bg.relation)p.push(bg.relation);if(bg.traits)p.push(bg.traits);if(bg.goal)p.push((LANG==='en'?'Goal: ':'当前目标：')+bg.goal);return p.length>0?'\n'+(LANG==='en'?'User: ':'用户背景：')+p.join((LANG==='en'?', ':'，'))+'.':'';}catch(e){return'';}}
+
+/* ===== DEMO ===== */
+function dR(scene,partner,input,env){var sc=gS();var pn=sc[scene];var p=partner||(LANG==='en'?'someone':'某人');
+  var TZ={work:['A 成功率 67%（风险可控）\nB 成功率 41%（高回报需+2周）\n'+p+' 可能在试探你的判断力，别急着站队'],travel:['前方200m 川菜馆 4.7★ 招牌水煮鱼\n左转500m 日料 人均80 需预约\n拐角老店 开了30年 无评分但本地人常去'],intimate:['ta 问的可能不是方案，是你站哪边\n先听，别急给建议\n有时候要的不是答案，是被听见'],crisis:['确认安全\n确认信息完整\n时间还剩多少'],social:['这是陷阱问题\n别当众评价同事\n回"工作挺认真的"然后转移话题'],content:['不急，先享受现在\nta 的问题你刚才眼神停了一下']};
+  var TE={work:['A: 67% success (lower risk)\nB: 41% success (higher reward)\n'+p+' may be testing your judgment'],travel:['200m: Sichuan 4.7★\n500m left: Japanese ~$30/pp\nCorner: 30yr old, locals love it'],intimate:['They may not be asking about a solution\nListen first, don\'t rush\nSometimes what\'s needed is being heard'],crisis:['Confirm safety\nConfirm you have all info\nHow much time left'],social:['Trap question\nDon\'t evaluate colleagues publicly\nSay "they work hard" and move on'],content:['Your eyes paused on that earlier\nNo rush — enjoy the moment']};
+  var T=LANG==='en'?TE:TZ;var pool=T[scene];var resp=pool[Math.floor(Math.random()*pool.length)];
+  return{persona:pn,response:resp,mode:'demo',reasoning:(LANG==='en'?'Scene: ':'场景:')+pn.name+'\n'+(LANG==='en'?'Provides: ':'提供信息:')+pn.info};}
+
+/* ===== API ===== */
+document.getElementById('pr').onchange=function(){document.getElementById('bu').style.display=this.value==='custom'?'':'none';};
+async function CK(){var dot=document.getElementById('sd');dot.className='sd ck';dot.textContent=t('chk');
+  var ak=document.getElementById('ak').value.trim();var pv=document.getElementById('pr').value;var bu=document.getElementById('bu').value.trim();var sel=document.getElementById('ms');
+  if(!ak){dot.className='sd er';dot.textContent=t('nok');return;}
+  try{var h=await fetch('/api/health');if(!(await h.json()).ok)throw new Error();}catch(e){dot.className='sd ok';dot.style.color='var(--so)';dot.textContent='🟡 Demo 模式 — 填入 Key 后启动 server.py';return;}
+  try{var r=await fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:ak,provider:pv,base_url:bu})});var d=await r.json();
+    if(d.ok&&d.models&&d.models.length>0){dot.className='sd ok';dot.textContent=t('conn',{p:pv,c:String(d.models.length)});
+      sel.innerHTML=d.models.map(function(m){return'<option value="'+m+'">'+m+'</option>';}).join('');
+      var pref=d.models.find(function(m){return m.indexOf('chat')!==-1&&m.indexOf('reasoning')===-1;});if(pref)sel.value=pref;else sel.value=d.models[0];}
+    else{dot.className='sd er';dot.textContent=t('cerr',{m:d.error||'no models'});}
+  }catch(e){dot.className='sd er';dot.textContent=t('cerr',{m:e.message});}}
+
+async function lR(scene,partner,input,env,apiKey){var sc=gS();var pn=sc[scene];var pv=document.getElementById('pr').value;var bu=document.getElementById('bu').value.trim();var model=document.getElementById('ms').value.trim()||'deepseek-chat';
+  var cC=gCT(partner);var uC=gUC();var eb=[env,uC,cC].filter(Boolean).join('\n');
+  var sp='# IDENTITY\nYou are Symbiote — an AI symbiote whispering directly into the user\'s mind.\nYou are not chatting. Only provide info the user doesn\'t already know.\n'+(eb?'Context: '+eb+'\n':'')+'Scene「'+pn.name+'」— you provide: '+pn.info+'\n\n# STEPS\n- Decide what the user most needs: data? insight? warning?\n- Provide ONLY that, nothing else\n- Keep each line under 20 words\n\n# OUTPUT\n- 1-4 lines of plain text\n- Do NOT restate. Do NOT speak for the user. No prefixes.\n- No warnings, notes, explanations\n- Do not repeat\n'+t('rZH')+'\n\n# INPUT';
+  var up='「'+(partner||(LANG==='en'?'someone':'某人'))+'」'+(LANG==='en'?' said: "':'对用户说："')+input+'"';
+  var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},body:JSON.stringify({api_key:apiKey,provider:pv,base_url:bu,model:model,temperature:scene==='crisis'?0.1:scene==='intimate'?0.7:0.4,messages:[{role:'system',content:sp},{role:'user',content:up}]})});
+  if(!r.ok){var eb=await r.json().catch(function(){return{};});throw new Error(eb.error?eb.error.message||eb.error:'API '+r.status);}
+  var d=await r.json();return{persona:pn,response:d.choices[0].message.content,mode:'live',reasoning:'Provider: '+pv+'\nModel: '+model+'\nScene: '+pn.name+'\nLang: '+LANG+'\nProvides: '+pn.info};}
+
+/* ===== UI ===== */
+document.getElementById('sG').onclick=function(e){var c=e.target.closest('.sc');if(!c)return;document.querySelectorAll('.sc').forEach(function(x){x.classList.remove('on');});c.classList.add('on');cur=c.dataset.scene;};
+function CA(){document.getElementById('pn').value='';document.getElementById('inp').value='';document.getElementById('env').value='';document.getElementById('oA').innerHTML='<div class="es"><div class="bi">🧠</div><p>'+t('cleared')+'</p></div>';}
+async function AN(){var pn=document.getElementById('pn').value.trim();var inp=document.getElementById('inp').value.trim();var env=document.getElementById('env').value.trim();if(!inp){alert(t('ni'));return;}var ak=document.getElementById('ak').value.trim();var out=document.getElementById('oA');out.innerHTML='<div class="ld"><div class="sp"></div><p>'+t('loading')+'</p></div>';
+  try{var r;if(ak){r=await lR(cur,pn,inp,env,ak);}else{await new Promise(function(rs){setTimeout(rs,400+Math.random()*400);});r=dR(cur,pn,inp,env);}rR(r);}
+  catch(err){out.innerHTML='<div class="rc" style="border-color:var(--cr)"><p style="color:var(--cr)">⚠ '+esc(err.message)+'</p><p style="color:var(--di);font-size:.8rem;margin-top:8px">'+t('fbD')+'</p></div>';var fb=dR(cur,pn,inp,env);setTimeout(function(){rR(fb);},400);}}
+function rR(r){var p=r.persona;var bcls=badgeMap[p.id]||'bw';document.getElementById('oA').innerHTML='<span class="pb '+bcls+'">'+p.icon+' '+p.name+' · '+(r.mode==='live'?t('live'):t('demo'))+'</span><div class="rc"><div class="th">'+t('prov')+p.info+'</div><div class="bd">'+esc(r.response)+'</div></div><details><summary style="cursor:pointer;color:var(--di);font-size:.75rem">'+t('why')+'</summary><pre class="lg">'+esc(r.reasoning)+'</pre></details>';}
+async function CP(){var pn=document.getElementById('pn').value.trim();var inp=document.getElementById('inp').value.trim();var env=document.getElementById('env').value.trim();if(!inp){alert(t('ni'));return;}var out=document.getElementById('oA');out.innerHTML='<div class="ld"><div class="sp"></div><p>'+t('cmpL')+'</p></div>';await new Promise(function(rs){setTimeout(rs,500);});
+  var h='<div class="cg">';var scs=['work','travel','intimate','crisis','social','content'];
+  for(var i=0;i<scs.length;i++){var s=scs[i];var r=dR(s,pn,inp,env);var p=r.persona;var tx=r.response.length>180?r.response.slice(0,180)+'…':r.response;h+='<div class="cc" style="border-left:3px solid var(--'+p.id+')"><div class="cl">'+p.icon+' '+p.name+'</div><div style="font-size:.7rem;color:var(--di);margin-bottom:6px">'+p.info+'</div><div class="cb">'+esc(tx)+'</div></div>';}
+  h+='</div>';out.innerHTML=h;}
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();AN();}});
+
+/* ===== INIT ===== */
+lC();lB();rC();rX();L(LANG);
+fetch('/api/health').then(function(r){return r.json();}).then(function(d){var dot=document.getElementById('sd');if(d.ok){dot.className='sd ok';dot.textContent=t('srvOk');}}).catch(function(){var dot=document.getElementById('sd');if(dot){dot.className='sd ok';dot.style.color='var(--so)';dot.style.border='1px solid rgba(210,168,80,.4)';dot.style.background='rgba(210,168,80,.1)';dot.textContent='🟡 Demo Mode (offline)';}});
+</script></body></html>
