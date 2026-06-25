@@ -208,7 +208,10 @@ document.getElementById('pr').onchange=function(){document.getElementById('bu').
 async function CK(){var dot=document.getElementById('sd');dot.className='sd ck';dot.textContent=t('chk');
   var ak=document.getElementById('ak').value.trim();var pv=document.getElementById('pr').value;var bu=document.getElementById('bu').value.trim();var sel=document.getElementById('ms');
   if(!ak){dot.className='sd er';dot.textContent=t('nok');return;}
-  try{var h=await fetch('/api/health');if(!(await h.json()).ok)throw new Error();}catch(e){dot.className='sd ok';dot.style.color='var(--so)';dot.textContent='🟡 Demo 模式 — 填入 Key 后启动 server.py';return;}
+  // 检测是否在 GitHub Pages（无本地服务器）
+  try{var h=await fetch('/api/health',{signal:AbortSignal.timeout(3000)});if(!(await h.json()).ok)throw new Error();}catch(e){
+    dot.className='sd ok';dot.style.color='var(--so)';dot.style.border='1px solid rgba(210,168,80,.4)';dot.style.background='rgba(210,168,80,.1)';
+    dot.textContent='🟡 线上 Demo 模式 — Live 需本地运行 python server.py';return;}
   try{var r=await fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:ak,provider:pv,base_url:bu})});var d=await r.json();
     if(d.ok&&d.models&&d.models.length>0){dot.className='sd ok';dot.textContent=t('conn',{p:pv,c:String(d.models.length)});
       sel.innerHTML=d.models.map(function(m){return'<option value="'+m+'">'+m+'</option>';}).join('');
