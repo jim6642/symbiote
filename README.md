@@ -43,7 +43,7 @@ python server.py            # → http://localhost:18765
 | ✈️ Travel | GF: "What's for dinner?" (rainy, she hates spicy) | `300m right: Hai Wei Guan 4.3★ Braised fish ¥55/p No spicy, quiet, bike 3 min` |
 | 👥 Social | Colleague: "What do you think of Manager Zhang?" | `Trap question. He's testing your stance on leadership. The vaguer the safer. Two others listening.` |
 | 💑 Intimate | GF: "You've been working late every day" | `She's expressing loneliness, not blame. Don't justify — hold her hand first.` |
-| 🚨 Crisis | 2am, strange footsteps in hallway | `Chain-lock the door. Lights off. Peephole: check for tampering. Phone silent, 110 on speed dial.` |
+| 🚨 Crisis | 2am, strange footsteps in hallway | `Chain-lock the door. Lights off. Peephole: check for tampering. Phone silent, 911 on speed dial.` |
 
 ---
 
