@@ -13,19 +13,11 @@
 
 ## 🎮 在线 Demo
 
-**👉 [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/) — 点开即用，无需安装。**
+**👉 [symbiote-hazel.vercel.app](https://symbiote-hazel.vercel.app/) — 点开即用，填 Key 即连 AI。**
 
-Demo 模式内置模拟回应，展示全部功能。填入 API Key 即可切换 Live 模式（需本地服务器）。
+Demo 模式无需 Key 也能体验全部功能。填入 DeepSeek / OpenAI API Key 即可切换 Live 模式。
 
-<details>
-<summary>🔧 Live 模式：本地运行（可选）</summary>
-
-```bash
-cd PROTOTYPE/demo
-pip install openai          # 仅 Live 模式需要
-python server.py            # → http://localhost:18765
-```
-</details>
+> 🇨🇳 国内访问慢？备用地址：[jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/)（仅 Demo 模式）
 
 **功能：**
 - 🎭 **6 种场景人格**：工作 / 旅行 / 亲密 / 危机 / 社交 / 内容消费
@@ -142,9 +134,8 @@ symbiote/
 
 ## 🚀 快速开始
 
-**无需安装 — 直接访问 [jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/)** 即可试用。
-
-如需 Live AI 模式（可选）：`cd PROTOTYPE/demo && python server.py`
+访问 **[symbiote-hazel.vercel.app](https://symbiote-hazel.vercel.app/)** 即可试用。
+（国内备用：[jim6642.github.io/symbiote](https://jim6642.github.io/symbiote/)）
 
 ---
 
